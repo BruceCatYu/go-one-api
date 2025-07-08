@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/goccy/go-json"
+	"github.com/openai/openai-go"
 )
 
 const (
@@ -14,6 +15,7 @@ const (
 
 type Client interface {
 	FromOpenaiFormat(context.Context, string, string, map[string]json.RawMessage) (any, bool, error)
+	Embedding(context.Context, string, string, *openai.EmbeddingNewParams) (any, error)
 }
 type SseStream interface {
 	NextChunk() (any, bool)

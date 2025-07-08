@@ -3,6 +3,7 @@ package providers
 import (
 	"context"
 	"fmt"
+
 	"github.com/BruceCatYu/go-one-api/internal/utils"
 	"github.com/BruceCatYu/go-one-api/pkg/config"
 	"github.com/goccy/go-json"
@@ -73,5 +74,16 @@ func (a *Ali) FromOpenaiFormat(ctx context.Context, rawModel, modelId string, pa
 		}, true, err
 	}
 	resp, err := a.client.Chat.Completions.New(ctx, req)
+	resp.Model = rawModel
 	return resp, false, err
+}
+
+func (a *Ali) Embedding(ctx context.Context, rawModel, modelId string, params *openai.EmbeddingNewParams) (any, error) {
+	params.Model = modelId
+	resp, err := a.client.Embeddings.New(ctx, *params)
+	if err != nil {
+		return nil, err
+	}
+	resp.Model = rawModel
+	return resp, nil
 }

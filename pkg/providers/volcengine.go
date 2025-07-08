@@ -8,6 +8,8 @@ import (
 	"github.com/BruceCatYu/go-one-api/internal/utils"
 	"github.com/BruceCatYu/go-one-api/pkg/config"
 	"github.com/goccy/go-json"
+	"github.com/openai/openai-go"
+	"github.com/openai/openai-go/packages/param"
 	"github.com/volcengine/volcengine-go-sdk/service/arkruntime"
 	"github.com/volcengine/volcengine-go-sdk/service/arkruntime/model"
 	arkUtils "github.com/volcengine/volcengine-go-sdk/service/arkruntime/utils"
@@ -140,5 +142,40 @@ func (v *Volc) FromOpenaiFormat(ctx context.Context, rawModel, modelId string, p
 		return &VolcStream{stream: stream, model: rawModel}, true, err
 	}
 	resp, err := v.client.CreateChatCompletion(ctx, req)
+	resp.Model = rawModel
 	return resp, false, err
+}
+
+func (v *Volc) Embedding(ctx context.Context, rawModel, modelId string, params *openai.EmbeddingNewParams) (any, error) {
+	req := model.EmbeddingRequestStrings{
+		Model: modelId,
+	}
+	input := params.Input
+	if !param.IsOmitted(input.OfString) {
+		req.Input = []string{input.OfString.Value}
+	} else if !param.IsOmitted(input.OfArrayOfStrings) {
+		req.Input = input.OfArrayOfStrings
+	}
+	switch params.EncodingFormat {
+	case openai.EmbeddingNewParamsEncodingFormatFloat:
+		req.EncodingFormat = "float"
+	case openai.EmbeddingNewParamsEncodingFormatBase64:
+		req.EncodingFormat = "base64"
+	}
+	if !param.IsOmitted(params.User) {
+		req.User = params.User.Value
+	}
+	if !param.IsOmitted(params.Dimensions) {
+		req.Dimensions = int(params.Dimensions.Value)
+	}
+	resp, err := v.client.CreateEmbeddings(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	resp.Model = rawModel
+	respBytes, _ := json.Marshal(resp)
+	var respMap map[string]any
+	_ = json.Unmarshal(respBytes, &respMap)
+	delete(respMap, "HttpHeader")
+	return respMap, nil
 }

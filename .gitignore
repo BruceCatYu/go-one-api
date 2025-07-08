@@ -7,3 +7,5 @@
 out
 gen
 config.yaml
+.zed
+.vscode

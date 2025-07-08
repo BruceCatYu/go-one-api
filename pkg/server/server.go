@@ -1,9 +1,10 @@
 package server
 
 import (
+	"strings"
+
 	"github.com/BruceCatYu/go-one-api/pkg/config"
 	"github.com/gin-gonic/gin"
-	"strings"
 )
 
 func Auth(c *gin.Context) {
@@ -30,6 +31,7 @@ func StartServer() {
 		{
 			chat.POST("completions", chatCompletions)
 		}
+		v1.POST("/embeddings", embeddings)
 	}
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
