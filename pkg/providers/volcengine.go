@@ -142,6 +142,9 @@ func (v *Volc) FromOpenaiFormat(ctx context.Context, rawModel, modelId string, p
 		return &VolcStream{stream: stream, model: rawModel}, true, err
 	}
 	resp, err := v.client.CreateChatCompletion(ctx, req)
+	if err != nil {
+		return nil, false, err
+	}
 	resp.Model = rawModel
 	return resp, false, err
 }

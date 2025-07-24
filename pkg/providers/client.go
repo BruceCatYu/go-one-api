@@ -11,6 +11,7 @@ const (
 	ProviderOpenai = "openai"
 	ProviderVolc   = "volc"
 	ProviderAli    = "ali"
+	ProviderGemini = "gemini"
 )
 
 type Client interface {
@@ -30,6 +31,8 @@ func GetClient(provider string) Client {
 		return GetVolc()
 	case ProviderAli:
 		return GetAli()
+	case ProviderGemini:
+		return GetGemini()
 	default:
 		return nil
 	}

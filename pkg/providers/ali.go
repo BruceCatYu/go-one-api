@@ -74,6 +74,9 @@ func (a *Ali) FromOpenaiFormat(ctx context.Context, rawModel, modelId string, pa
 		}, true, err
 	}
 	resp, err := a.client.Chat.Completions.New(ctx, req)
+	if err != nil {
+		return nil, false, err
+	}
 	resp.Model = rawModel
 	return resp, false, err
 }

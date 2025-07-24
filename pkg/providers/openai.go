@@ -72,8 +72,11 @@ func (o *Openai) FromOpenaiFormat(ctx context.Context, rawModel, modelId string,
 		}, true, err
 	}
 	resp, err := o.client.Chat.Completions.New(ctx, req)
+	if err != nil {
+		return nil, false, err
+	}
 	resp.Model = rawModel
-	return resp, false, err
+	return resp, false, nil
 }
 
 func (o *Openai) Embedding(ctx context.Context, rawModel, modelId string, params *openai.EmbeddingNewParams) (any, error) {
